@@ -1,48 +1,16 @@
-cmake_minimum_required(VERSION 3.19)
-project(Diploma LANGUAGES CXX)
+cmake_minimum_required(VERSION 3.20)
 
-find_package(Qt6 6.5 REQUIRED COMPONENTS Core)
+project(Diploma)
 
-qt_standard_project_setup()
+# find_package(Qt6 REQUIRED COMPONENTS Core)
 
+# qt_standard_project_setup()
 
+set(CMAKE_CXX_STANDARD 17)
 
-set(JSON_BuildTests OFF CACHE INTERNAL "")
+set(INCLUDE_DIR ${CMAKE_SOURCE_DIR}/include)
+set(RESOURCES ${CMAKE_SOURCE_DIR}/src)
 
-add_subdirectory(nlohmann_json)
-
-qt_add_executable(Diploma
-    main.cpp converterjson.cpp
-    converterjson.h
-    tests/CMakeLists
-    # config.json
-    # requests.json
-    # answers.json
-)
-
+add_subdirectory(src)
 add_subdirectory(tests)
-
-
-target_link_libraries(Diploma PRIVATE nlohmann_json::nlohmann_json)
-
-target_link_libraries(Diploma
-    PRIVATE
-        Qt::Core
-)
-
-include(GNUInstallDirs)
-
-install(TARGETS Diploma
-    BUNDLE  DESTINATION .
-    RUNTIME DESTINATION ${CMAKE_INSTALL_BINDIR}
-    LIBRARY DESTINATION ${CMAKE_INSTALL_LIBDIR}
-)
-
-qt_generate_deploy_app_script(
-    TARGET Diploma
-    OUTPUT_SCRIPT deploy_script
-    NO_UNSUPPORTED_PLATFORM_ERROR
-)
-install(SCRIPT ${deploy_script})
-
 

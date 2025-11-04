@@ -1,6 +1,7 @@
 #include "converterjson.h"
 #include <nlohmann/json.hpp>
 #include <fstream>
+#include <iostream>
 
 #define MANUAL 1
 
@@ -28,18 +29,18 @@ std::string inputInfo(std::string in_dir) {
 }
 
 std::vector<std::string> ConverterJSON::GetTextDocuments(){
-    nlohmann::json config = GetJSON("../config.json");
+    nlohmann::json config = GetJSON("../../../config/config.json");
     std::vector<std::string> content;
-    std::string dir;
+    std::string dir, prefix = "../../";
     for (auto it = config["files"].begin();it != config["files"].end(); it++){
-        dir = *it;
+        dir = prefix + (std::string)(*it);
         content.push_back(inputInfo(dir));
     }
     return content;
 }
 
 std::vector<std::string> ConverterJSON::GetRequests() {
-    nlohmann::json req = GetJSON("../Requests.json");
+    nlohmann::json req = GetJSON("../../../config/Requests.json");
     std::vector<std::string> requests;
     std::string dir;
     for (auto it = req["requests"].begin();it != req["requests"].end(); it++){
@@ -49,7 +50,7 @@ std::vector<std::string> ConverterJSON::GetRequests() {
 }
 
 int ConverterJSON::GetResponsesLimit(){
-    nlohmann::json config = GetJSON("../config.json");
+    nlohmann::json config = GetJSON("../../../config/config.json");
     return config["config"]["max_responses"];
 }
 
@@ -89,6 +90,6 @@ void ConverterJSON::putAnswers(std::vector<std::vector<std::pair<int, float>>> a
         }
     }
 
-    std::ofstream testPut("../answers2.json");
+    std::ofstream testPut("../../../config/answers2.json");
     testPut << answers_to_put;
 }

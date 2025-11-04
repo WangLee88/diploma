@@ -1,16 +1,14 @@
 #include <iostream>
 #include <nlohmann/json.hpp>
-#include "converterjson.h"
-#include "gtest/gtest.h"
-
-TEST(sample_test_case, sample_test) {
-    EXPECT_EQ(1, 1);
-}
+#include <converterjson.h>
 
 int main(int argc, char *argv[])
 {
     ConverterJSON json;
+
     std::vector<std::string> content = json.GetTextDocuments();
+
+
     for (int i = 0; i < content.size(); i++) std::cout << "Text No." << i + 1 << ": \n" << content[i] << "\n" << std::endl;
     int test = json.GetResponsesLimit();
     std::cout << "Max responces = " << test << std::endl;
@@ -22,6 +20,7 @@ int main(int argc, char *argv[])
 
     json.putAnswers(testAnswers);
 
+
     // Set up code that uses the Qt event loop here.
     // Call a.quit() or a.exit() to quit the application.
     // A not very useful example would be including
@@ -32,7 +31,6 @@ int main(int argc, char *argv[])
 
     // If you do not need a running Qt event loop, remove the call
     // to a.exec() or use the Non-Qt Plain C++ Application template.
-
 
 
 

@@ -1,3 +1,7 @@
+cmake_minimum_required(VERSION 3.8)
+
+project(Diploma_test)
+
 include(FetchContent)
 
 FetchContent_Declare(googletest URL https://github.com/google/googletest/archive/609281088cfefc76f9d0ce82e1ff6c30cc3591e5.zip)
@@ -12,8 +16,12 @@ FetchContent_MakeAvailable(googletest)
 
 enable_testing()
 
-target_link_libraries(Diploma PRIVATE gtest_main)
+add_executable(diploma_test tryaltest.cpp)
+
+target_link_libraries(diploma_test PRIVATE gtest_main)
 
 include(GoogleTest)
 
-gtest_discover_tests(../Diploma)
+gtest_discover_tests(diploma_test)
+
+
