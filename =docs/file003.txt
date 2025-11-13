@@ -1,0 +1,8 @@
+
+I am trying to check
+Whether london is the capital of great britain
+and is big ben the nickname for the Great bell of the striking clock
+
+I do not know how to check it
+london is the capital of great britain
+big ben is the nickname for the Great bell of the striking clock

@@ -1,7 +1,6 @@
 #include "converterjson.h"
 #include <nlohmann/json.hpp>
 #include <fstream>
-#include <iostream>
 
 #define MANUAL 1
 
@@ -54,25 +53,25 @@ int ConverterJSON::GetResponsesLimit(){
     return config["config"]["max_responses"];
 }
 
-std::vector<std::vector<std::pair<int, float>>> ConverterJSON::find(){
-#if MANUAL
-    return {
-        {
-            {0, 0.25},
-            {3, 0.89}
-        },
-        {},
-        {
-            {1, 0.965},
-            {2, 0.999}
-        }
-    };
-#elif !MANUAL
+// std::vector<std::vector<std::pair<int, float>>> ConverterJSON::find(){
+// #if MANUAL
+//     return {
+//         {
+//             {0, 0.25},
+//             {3, 0.89}
+//         },
+//         {},
+//         {
+//             {1, 0.965},
+//             {2, 0.999}
+//         }
+//     };
+// #elif !MANUAL
 
-    return {};
+//     return {};
 
-#endif
-}
+// #endif
+// }
 
 void ConverterJSON::putAnswers(std::vector<std::vector<std::pair<int, float>>> answers){
     nlohmann::json answers_to_put;

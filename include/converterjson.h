@@ -10,9 +10,7 @@ public:
     std::vector<std::string> GetTextDocuments();
     int GetResponsesLimit();
     std::vector<std::string> GetRequests();
-    std::vector<std::vector<std::pair<int, float>>> find();
     void putAnswers(std::vector<std::vector<std::pair<int, float>>> answers);
-
 };
 
 #endif // CONVERTERJSON_H
