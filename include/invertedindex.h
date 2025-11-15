@@ -20,9 +20,9 @@ public:
     void UpdateDocumentBase(std::vector<std::string> input_docs);
     /* * * Метод определяет количество вхождений слова word в загруженной базе документов * @param word слово, частоту вхождений которого необходимо определить * @return возвращает подготовленный список с частотой слов */
     std::vector<Entry> GetWordCount(const std::string& word);
-    std::vector<std::string> getDocs();
-    void UpdateFreq_Dictionary(std::vector<std::string> in_docs);
-    void Insertion(std::string in_doc, int in_docid);
+    std::vector<std::string> getDocs(); // сам добавил, для удобства
+    void UpdateFreq_Dictionary(std::vector<std::string> in_docs); //сам добавил, для удобства
+    void Insertion(std::string in_doc, int in_docid); // сам добавил, для удобства
 
 private:
     std::vector<std::string> docs; // список содержимого документов

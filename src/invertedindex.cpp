@@ -1,9 +1,13 @@
 #include <invertedindex.h>
 #include <sstream>
-#include <iostream>
 #include <thread>
 #include <mutex>
-#define FORDEBUGGING
+// #define FORDEBUGGING2
+
+#ifdef FORDEBUGGING2
+#include <iostream>
+#endif
+
 
 std::mutex mapLock;
 std::mutex logMutex;
@@ -100,7 +104,7 @@ void InvertedIndex::UpdateFreq_Dictionary(std::vector<std::string> in_docs){ // 
     for (int i = 0; i < threads.size(); i++) threads[i]->join();
     for (int i = 0; i < threads.size(); i++) delete threads[i];
 
-#ifdef FORDEBUGGING
+#ifdef FORDEBUGGING2
     std::cout << "*** RESULTS ***" << std::endl;
     for (auto it = freq_dictionary.begin(); it != freq_dictionary.end(); it++) {
         std::cout << "Word \"" << it->first << "\": " << std::endl;
@@ -113,6 +117,7 @@ void InvertedIndex::UpdateFreq_Dictionary(std::vector<std::string> in_docs){ // 
 }
 
 std::vector<Entry> InvertedIndex::GetWordCount(const std::string& word) {
-    std::vector<Entry> vec{};
-    return vec;
+    if (freq_dictionary.find(word) == freq_dictionary.end()) return std::vector<Entry>{};
+    else return freq_dictionary[word];
+    // Да, думаю, нужно так: если слова нет, то вернут пустой вектор. Иначе - вернуть вектор вхождений.
 }

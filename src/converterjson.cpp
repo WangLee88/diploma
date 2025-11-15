@@ -84,7 +84,7 @@ void ConverterJSON::putAnswers(std::vector<std::vector<std::pair<int, float>>> a
         else {
             answers_to_put["answers"][name]["result"] = true;
             for (int j = 0; j < answers[i].size(); j++) {
-                answers_to_put["answers"][name]["relevance"] = {"docid", answers[i][j].first, "rank" , answers[i][j].second};
+                answers_to_put["answers"][name]["relevance"] += {"docid", answers[i][j].first, "rank" , answers[i][j].second};
             }
         }
     }
