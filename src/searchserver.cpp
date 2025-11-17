@@ -45,6 +45,7 @@ std::vector<std::vector<RelativeIndex>> SearchServer::search(const std::vector<s
                     // Такс, ну теперь можно прямо из частотного словаря брать вектор вхождений и сохранить его вектор.
 
                     currentWordEntries.push_back(_index.GetWordCount(currentWord));
+
                     // Всё! Сохранили вектор вхождений в вектор векторов вхождений.
                 }
                 // Ответвлений не требуется - если слово уже было найдено в словаре флагов, то ничего делать не нужно.
@@ -52,23 +53,45 @@ std::vector<std::vector<RelativeIndex>> SearchServer::search(const std::vector<s
 
         }
 
+
         // Вот к этому моменту по текущему (i-тому) запросу по каждому слову в векторе currentWordEntries должны были
         // сохраниться вектора Entry.
         // Теперь нужно отсортировать вектор векторов. Можно пузырьком с конца.
 
-        for (int j = currentWordEntries.size() - 1; j > 0; j--) {
+#ifdef FORDEBUGGING
+        std::cout << "First size test: " << std::endl;
+        for (int m = 0; m < currentWordEntries.size(); m++){
+            std::cout << "CurrentEntry Size: " << currentWordEntries[m].size() << std::endl;
+        }
+#endif
 
-            if (!currentWordEntries[j].empty()) {
-                if (currentWordEntries[j - 1].empty() || currentWordEntries[j].size() < currentWordEntries[j - 1].size()) {
-                    std::vector<Entry> temp = currentWordEntries[j];
-                    currentWordEntries[j] = currentWordEntries[j - 1];
-                    currentWordEntries[j - 1] = currentWordEntries[j];
-
+        for (int j = 0; j < currentWordEntries.size() - 1; j++) {
+            for (int k = 0; k < currentWordEntries.size() - 1 - j; k++) {
+                if (currentWordEntries[k].size() > currentWordEntries[k+1].size()) {
+                    auto tempEntry = currentWordEntries[k];
+                    currentWordEntries[k] = currentWordEntries[k+1];
+                    currentWordEntries[k+1] = tempEntry;
                 }
             }
-
         }
 
+        // for (int j = currentWordEntries.size() - 1; j > 0; j--) {
+        //     if (!currentWordEntries[j].empty()) {
+        //         if (currentWordEntries[j - 1].empty() || currentWordEntries[j].size() < currentWordEntries[j - 1].size()) {
+        //             std::vector<Entry> temp = currentWordEntries[j];
+        //             currentWordEntries[j] = currentWordEntries[j - 1];
+        //             currentWordEntries[j - 1] = currentWordEntries[j];
+
+        //         }
+        //     }
+
+        // }
+#ifdef FORDEBUGGING
+        std::cout << "Second size test: " << std::endl;
+        for (int m = 0; m < currentWordEntries.size(); m++){
+            std::cout << "CurrentEntry Size: " << currentWordEntries[m].size() << std::endl;
+        }
+#endif
 
         // Теперь currentWordEntries отсортирован по частоте слов.
         // Первый элемент - самый маленький. При этом пустые - в конце.
@@ -121,28 +144,33 @@ std::vector<std::vector<RelativeIndex>> SearchServer::search(const std::vector<s
 
         else {
             // И вот самое интересное. Если размер не 0, то будем считать релевантность.
-#ifdef FORDEBUGGING
-            std::cout << "I: " << i << std::endl;
-            for (int m = 0; m < currentWordEntries.size(); m++){
-                std::cout << "\tM (word): " << m << std::endl;
-                for (int n = 0; n < currentWordEntries[m].size(); n++) {
-                    std::cout << "\t\tN (entry): " << n
-                              << ", DocID: " << currentWordEntries[m][n].doc_id
-                              << ", count: " << currentWordEntries[m][n].count << std::endl;
-                }
-            }
 
-#endif
             std::map<size_t, int> temp; // Потом преобразую в вектор.
             int max = 0;
             for (int j = 0; j < currentWordEntries.size(); j++) {
+#ifdef FORDEBUGGING
+                std::cout   << "J (Word):" << j << std::endl;
+#endif
                 for (int k = 0; k < currentWordEntries[j].size(); k++) {
+
+
+#ifdef FORDEBUGGING
+                    std::cout << "\tK (Entry):" << std::endl;
+                    std::cout   << "\t\t{" << currentWordEntries[j][k].doc_id
+                                << ", " << currentWordEntries[j][k].count
+                                << "}" << std::endl;
+#endif
                     if (temp.find(currentWordEntries[j][k].doc_id) == temp.end()) {
                         temp.insert(std::make_pair(currentWordEntries[j][k].doc_id, currentWordEntries[j][k].count));
                     }
                     else {
-                        temp[currentWordEntries[j][k].doc_id]+= currentWordEntries[j][k].count;
 
+                        int n = temp[currentWordEntries[j][k].doc_id] + currentWordEntries[j][k].count;
+                        temp[currentWordEntries[j][k].doc_id] = n;
+
+#ifdef FORDEBUGGING
+                        std::cout << "\t\tNew value: " << n << std::endl;
+#endif
                     }
                     if (temp[currentWordEntries[j][k].doc_id] > max) max = temp[currentWordEntries[j][k].doc_id];
                 }
@@ -151,7 +179,17 @@ std::vector<std::vector<RelativeIndex>> SearchServer::search(const std::vector<s
 
 
             std::vector<RelativeIndex> currentReqResult;
+#ifdef FORDEBUGGING
+            std::cout << "Max is: " << max << std::endl;
+#endif
+
             for (auto it = temp.begin(); it != temp.end(); it++) {
+#ifdef FORDEBUGGING
+                std::cout << "Rank is: \n"
+                          << "DocID: " << it->first
+                          << ",\nrank: " << it->second << " (abs. rank) / "
+                          << max << " (max) = " << (float) it->second / max << std::endl;
+#endif
                 RelativeIndex currentRI = {it->first, (float) it->second / max};
                 currentReqResult.push_back(currentRI);
             }
@@ -175,8 +213,19 @@ std::vector<std::vector<RelativeIndex>> SearchServer::search(const std::vector<s
             }
 
             if (currentReqResult.size() > 5) currentReqResult.resize(5);
-
             resultRelativeIndexesVec.push_back(currentReqResult);
+
+
+#ifdef FORDEBUGGING
+            std::cout << "\tI (Req): " << i << std::endl;
+
+            for (int m = 0; m < currentReqResult.size(); m++){
+                std::cout << "\t\tm (RelativIndex): " << m
+                          << ", DocID: " << currentReqResult[m].doc_id
+                          << ", rank: " << currentReqResult[m].rank << std::endl;
+            }
+
+#endif
         }
 
     }
