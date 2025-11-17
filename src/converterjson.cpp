@@ -2,7 +2,6 @@
 #include <nlohmann/json.hpp>
 #include <fstream>
 
-#define MANUAL 1
 
 nlohmann::json GetJSON(std::string file) {
     nlohmann::json config;
@@ -53,26 +52,6 @@ int ConverterJSON::GetResponsesLimit(){
     return config["config"]["max_responses"];
 }
 
-// std::vector<std::vector<std::pair<int, float>>> ConverterJSON::find(){
-// #if MANUAL
-//     return {
-//         {
-//             {0, 0.25},
-//             {3, 0.89}
-//         },
-//         {},
-//         {
-//             {1, 0.965},
-//             {2, 0.999}
-//         }
-//     };
-// #elif !MANUAL
-
-//     return {};
-
-// #endif
-// }
-
 void ConverterJSON::putAnswers(std::vector<std::vector<std::pair<int, float>>> answers){
     nlohmann::json answers_to_put;
     for (int i = 0; i < answers.size(); i++) {
@@ -89,6 +68,6 @@ void ConverterJSON::putAnswers(std::vector<std::vector<std::pair<int, float>>> a
         }
     }
 
-    std::ofstream testPut("../../../config/answers2.json");
+    std::ofstream testPut("../../../config/answers.json");
     testPut << answers_to_put;
 }
