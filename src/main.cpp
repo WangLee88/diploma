@@ -2,6 +2,7 @@
 #include <converterjson.h>
 #include <invertedindex.h>
 #include <searchserver.h>
+#include <iostream>
 
 std::vector<std::vector<std::pair<int, float>>> answersConverter(std::vector<std::vector<RelativeIndex>> in_answers) {
     std::vector<std::vector<std::pair<int, float>>> result;
@@ -19,10 +20,13 @@ std::vector<std::vector<std::pair<int, float>>> answersConverter(std::vector<std
 int main(int argc, char *argv[]){
     ConverterJSON json;
     InvertedIndex iIndex;
-    iIndex.UpdateDocumentBase(json.GetTextDocuments());
+    std::vector<std::string> docs = json.GetTextDocuments();
+    iIndex.UpdateDocumentBase(docs);
+
     SearchServer sServer(iIndex);
     std::vector<std::string> requests = json.GetRequests();
     auto answers = sServer.search(requests);
-    json.putAnswers(answersConverter(answers));
+    auto convertedAnswers = answersConverter(answers);
+    json.putAnswers(convertedAnswers);
     return 0;
 }

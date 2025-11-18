@@ -1,6 +1,7 @@
 #include "converterjson.h"
 #include <nlohmann/json.hpp>
 #include <fstream>
+#include <iostream>
 
 
 nlohmann::json GetJSON(std::string file) {
@@ -13,6 +14,7 @@ nlohmann::json GetJSON(std::string file) {
 }
 
 std::string inputInfo(std::string in_dir) {
+
     std::string content;
     std::ifstream in_to_add;
     in_to_add.open(in_dir);
@@ -21,26 +23,30 @@ std::string inputInfo(std::string in_dir) {
         in_to_add.read(app, 50);
         content.append(app, in_to_add.gcount());
     }
+
     delete[] app;
     in_to_add.close();
     return content;
 }
 
 std::vector<std::string> ConverterJSON::GetTextDocuments(){
-    nlohmann::json config = GetJSON("../../../config/config.json");
+
+    nlohmann::json config = GetJSON("config/config.json");
+
     std::vector<std::string> content;
-    std::string dir, prefix = "../../";
+    std::string dir;
+
     for (auto it = config["files"].begin();it != config["files"].end(); it++){
-        dir = prefix + (std::string)(*it);
+        dir = (std::string)(*it);
         content.push_back(inputInfo(dir));
     }
+
     return content;
 }
 
 std::vector<std::string> ConverterJSON::GetRequests() {
-    nlohmann::json req = GetJSON("../../../config/Requests.json");
+    nlohmann::json req = GetJSON("config/Requests.json");
     std::vector<std::string> requests;
-    std::string dir;
     for (auto it = req["requests"].begin();it != req["requests"].end(); it++){
         requests.push_back(*it);
     }
@@ -48,11 +54,12 @@ std::vector<std::string> ConverterJSON::GetRequests() {
 }
 
 int ConverterJSON::GetResponsesLimit(){
-    nlohmann::json config = GetJSON("../../../config/config.json");
+    nlohmann::json config = GetJSON("config/config.json");
     return config["config"]["max_responses"];
 }
 
-void ConverterJSON::putAnswers(std::vector<std::vector<std::pair<int, float>>> answers){
+void ConverterJSON::putAnswers(std::vector<std::vector<std::pair<int, float>>>& answers){
+
     nlohmann::json answers_to_put;
     for (int i = 0; i < answers.size(); i++) {
         std::string name = "request";
@@ -67,7 +74,8 @@ void ConverterJSON::putAnswers(std::vector<std::vector<std::pair<int, float>>> a
             }
         }
     }
-
-    std::ofstream testPut("../../../config/answers.json");
+    std::ofstream testPut;
+    testPut.open("config/answers.json");
     testPut << answers_to_put;
+    testPut.close();
 }

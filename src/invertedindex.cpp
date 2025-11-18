@@ -2,6 +2,7 @@
 #include <sstream>
 #include <thread>
 #include <mutex>
+#include <iostream>
 
 std::mutex mapLock;
 std::mutex logMutex;
@@ -10,12 +11,13 @@ std::vector<std::string> InvertedIndex::getDocs(){
     return docs;
 }
 
-void InvertedIndex::UpdateDocumentBase(std::vector<std::string> input_docs) {
+void InvertedIndex::UpdateDocumentBase(const std::vector<std::string>& input_docs) {
+
     docs = input_docs;
-    UpdateFreq_Dictionary(docs);
+    UpdateFreq_Dictionary();
 }
 
-void InvertedIndex::Insertion(std::string in_doc, int in_docid){ // Если успею, сделать словарь мьютексов, чтобы к каждому слову создавать отдельный мьютекс.
+void InvertedIndex::Insertion(std::string& in_doc, int in_docid){ // Если успею, сделать словарь мьютексов, чтобы к каждому слову создавать отдельный мьютекс.
     std::stringstream buffer;
     buffer << in_doc;
     std::map<std::string, bool> docInsertedWordsMap;
@@ -57,11 +59,11 @@ void InvertedIndex::Insertion(std::string in_doc, int in_docid){ // Если у�
     }
 }
 
-void InvertedIndex::UpdateFreq_Dictionary(std::vector<std::string> in_docs){
+void InvertedIndex::UpdateFreq_Dictionary(){
     std::vector<std::thread*> threads;
     for (int i = 0; i < docs.size(); i++) {
-        std::string currentDoc = docs[i];
-        std::thread* t = new std::thread(&InvertedIndex::Insertion, this, currentDoc, i);
+        // std::string currentDoc = docs[i];
+        std::thread* t = new std::thread(&InvertedIndex::Insertion, this, docs[i], i);
         threads.push_back(t);
     }
     for (int i = 0; i < threads.size(); i++) threads[i]->join();
